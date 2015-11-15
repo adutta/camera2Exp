@@ -59,7 +59,6 @@ public class MainActivity extends Activity {
 
             cDevice = cameraDevice;
             Toast.makeText(getApplicationContext(), "Camera Opened!", Toast.LENGTH_SHORT).show();
-
         }
 
         @Override
@@ -80,7 +79,7 @@ public class MainActivity extends Activity {
 
             cCaptureSession = cameraCaptureSession;
             Toast.makeText(getApplicationContext(), "CaptureSession linked!", Toast.LENGTH_SHORT).show();
-
+/*
             try {
                 //Setup the request
                 //Setup builder basics
@@ -107,10 +106,11 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(), "Something went wrong at onConfigured!", Toast.LENGTH_SHORT).show();
             }
+            */
         }
 
         @Override
-        public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
+        public void onConfigureFailed(CameraCaptureSession cameraCaptureSession){
         }
 
         @Override
@@ -132,15 +132,38 @@ public class MainActivity extends Activity {
         Toast.makeText(getApplicationContext(), "Camera stopped!", Toast.LENGTH_SHORT).show();
     }
 
+	public void setupRecorder(MediaRecorder recorder, File xFile, String fileName)
+	{
+        try{
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            recorder.setVideoSize(1280, 720);
+            recorder.setVideoEncodingBitRate(10000000);
+            recorder.setVideoFrameRate(30);
+            recorder.setAudioEncodingBitRate(32000);
+            recorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+            xFile =  new File(getExternalFilesDir(null),fileName);
+            recorder.setOutputFile(xFile.getAbsolutePath());
+            recorder.prepare();
+        }catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Something went wrong when setting up recording!", Toast.LENGTH_SHORT).show();
+        }
+	}
+
     public void startCamera(View view) {
         try{
             //Get list of devices (we will want "0" on the Nexus5)
-            String[] idList;
+            /*
+			String[] idList;
             idList= (String[]) cameraManager.getCameraIdList();
 
             //Get some info on the devices we see
             cameraCharacteristics = cameraManager.getCameraCharacteristics(idList[0]);
-            /*
+
             if(idList.length>0) {
                 for (int i = 0; i < idList.length; i++) {
                     Toast.makeText(getApplicationContext(), idList[i] + ": " + (i + 1) + " of " + idList.length, Toast.LENGTH_SHORT).show();
@@ -154,25 +177,14 @@ public class MainActivity extends Activity {
             // Configure surfaces to the right camera sizes
             //Setup mediaRecorder surface to record video....s
             mediaRecorder = new MediaRecorder();
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            mediaRecorder.setVideoSize(1280, 720);
-            mediaRecorder.setVideoEncodingBitRate(10000000);
-            mediaRecorder.setVideoFrameRate(30);
-            mediaRecorder.setAudioEncodingBitRate(32000);
-            mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
-            mFile =  new File(getExternalFilesDir(null),"myCrapVid.mp4");
-            mediaRecorder.setOutputFile(mFile.getAbsolutePath());
-            mediaRecorder.prepare();
+            setupRecorder(mediaRecorder, mFile, "myCrapVid.mp4");
 
             //Get stream configs for surfaces
-            StreamConfigurationMap configs = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            /*
+			StreamConfigurationMap configs = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             Size[] sizes = configs.getOutputSizes(ImageFormat.JPEG);
             int sizeIndex = 8;
-
+			*/
             //Iterate through the sizes on the phone
             //N5: size index 8 is 1280x720
             /*
@@ -202,7 +214,7 @@ public class MainActivity extends Activity {
     }
 
     public void recordVid(View view){
-        if(cDevice == null){
+        if(cDevice == null) {
             Toast.makeText(getApplicationContext(), "Camera not ready yet!", Toast.LENGTH_SHORT).show();
             return;
         }
